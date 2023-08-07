@@ -1,0 +1,31 @@
+tasks.withType(Checkstyle) {
+	configFile file('./codequality/checkstyle.xml')
+	checkstyleMain.source = "src/main/java"
+	checkstyleTest.enabled = false
+	//checkstyleComponentTest.enabled = false
+}
+
+build.finalizedBy shadowJar
+
+sonarqube {
+	properties {
+		property "sonar.exclusions", "**/VidyarthimgmtApplication.java"
+	}
+}
+abstract class ServiceJarSizeTask extends DefaultTask {
+	@TaskAction
+	def serviceJarSize() {
+		def jarPath = project.buildDir.absolutePath + "/libs/${project.rootProject.name}-${project.version}-all.jar"
+		def jarFile = project.file(jarPath)
+		def jarSizeInMbs = (jarFile.length() / (1024 * 1024)).round(2)
+		def maxJarSizeInMbs = 50
+		if (jarSizeInMbs > maxJarSizeInMbs) {
+			throw new GradleException("Service executable JAR size is $jarSizeInMbs Mb. The max allowed JAR size is $maxJarSizeInMbs Mb")
+		} else {
+			println "Service executable JAR size is $jarSizeInMbs Mb. It is below the current max jar size limit $maxJarSizeInMbs Mb"
+		}
+	}
+}
+
+tasks.register('serviceJarSize', ServiceJarSizeTask)
+shadowJar.finalizedBy serviceJarSize
