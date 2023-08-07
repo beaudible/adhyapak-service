@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/adhyapak")
-public class adhyapakController {
+public class AdhyapakController {
     @GetMapping("/greet")
     ResponseEntity<String> hello() {
         return ResponseEntity.ok("Suprabhat!");

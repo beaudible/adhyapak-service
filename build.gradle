@@ -1,15 +1,26 @@
 plugins {
 	id 'java'
-	id 'org.springframework.boot' version '3.1.2'
+	id 'checkstyle'
+	id "org.sonarqube" version "3.3"
+	id "com.github.johnrengelman.shadow" version "7.1.2"
 	id 'io.spring.dependency-management' version '1.1.2'
+	id 'org.springframework.boot' version '3.1.2'
 }
+
 
 group = 'com.valmiki'
 version = '0.0.1-SNAPSHOT'
+description = 'Adhyapak Microservice'
 
 java {
 	sourceCompatibility = '17'
+	targetCompatibility = '17'
 }
+
+project.ext {
+	mainClass = 'com.valmiki.adhyapakservice.AdhyapakServiceApplication'
+}
+
 
 configurations {
 	compileOnly {
@@ -29,8 +40,61 @@ dependencies {
 	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.junit.jupiter:junit-jupiter-params")
+	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.mockito:mockito-junit-jupiter")
+	testImplementation("org.assertj:assertj-core:")
+	testImplementation("org.testcontainers:junit-jupiter")
+	testImplementation("org.testcontainers:postgresql")
+}
+
+shadowJar {
+	mergeServiceFiles()
+	exclude 'META-INF/*.DSA', 'META-INF/*.RSA', 'META-INF/*.SF'
+	manifest {
+		attributes 'Main-Class': mainClass
+	}
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+	testLogging {
+		events("passed", "failed", "skipped")
+	}
 }
+
+tasks.withType(Checkstyle) {
+	configFile file('./codequality/checkstyle.xml')
+	checkstyleMain.source = "src/main/java"
+	checkstyleTest.enabled = false
+	//checkstyleComponentTest.enabled = false
+}
+
+build.finalizedBy shadowJar
+
+sonarqube {
+	properties {
+		property "sonar.exclusions", "**/AdhyapakApplication.java"
+	}
+}
+abstract class ServiceJarSizeTask extends DefaultTask {
+	@TaskAction
+	def serviceJarSize() {
+		def jarPath = project.buildDir.absolutePath + "/libs/${project.rootProject.name}-${project.version}-all.jar"
+		def jarFile = project.file(jarPath)
+		def jarSizeInMbs = (jarFile.length() / (1024 * 1024)).round(2)
+		def maxJarSizeInMbs = 50
+		if (jarSizeInMbs > maxJarSizeInMbs) {
+			throw new GradleException("Service executable JAR size is $jarSizeInMbs Mb. The max allowed JAR size is $maxJarSizeInMbs Mb")
+		} else {
+			println "Service executable JAR size is $jarSizeInMbs Mb. It is below the current max jar size limit $maxJarSizeInMbs Mb"
+		}
+	}
+}
+
+tasks.register('serviceJarSize', ServiceJarSizeTask)
+shadowJar.finalizedBy serviceJarSize
+
+
