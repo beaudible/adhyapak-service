@@ -9,7 +9,7 @@ public class DataNotFoundException extends Exception {
     public DataNotFoundException() {
         super("Data not found");
         this.errorResponse = new ErrorResponse();
-        this.errorResponse.setCode(HttpStatus.NOT_FOUND.value());  // You can set the appropriate status code
+        this.errorResponse.setCode(HttpStatus.NOT_FOUND.value());
         this.errorResponse.setMessage("Data not found");
     }
 }

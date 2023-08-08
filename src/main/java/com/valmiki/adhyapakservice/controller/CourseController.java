@@ -27,7 +27,7 @@ public class CourseController {
         courseService.save(courseRequest);
 
         CourseResponse courseResponse = CourseResponse.builder()
-                .id(courseRequest.getId()) // Assuming CourseRequest has an id field
+                .id(courseRequest.getId())
                 .courseName(courseRequest.getCourseName())
                 .subHeading(courseRequest.getSubHeading())
                 .build();
