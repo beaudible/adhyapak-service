@@ -1,13 +1,14 @@
 package com.valmiki.adhyapakservice.service;
 
-import com.valmiki.adhyapakservice.entity.Courses;
+import com.valmiki.adhyapakservice.dto.request.CourseRequest;
+import com.valmiki.adhyapakservice.dto.response.CourseResponse;
 
 import java.util.List;
 
 public interface CourseService {
-    List<Courses> findAll();
+    List<CourseResponse> findAll();
 
-    Courses findByID(int theId);
+    List<CourseResponse> findByID(int theId);
 
-    void save(Courses theCourse);
+    void save(CourseRequest courseRequest);
 }
