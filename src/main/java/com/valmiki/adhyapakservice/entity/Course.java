@@ -1,7 +1,10 @@
 package com.valmiki.adhyapakservice.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
+import lombok.ToString;
+
 
 @Entity
 @Builder
