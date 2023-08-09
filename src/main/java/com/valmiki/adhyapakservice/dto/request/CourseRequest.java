@@ -14,8 +14,9 @@ public class CourseRequest {
 
     private int id;
     @JsonProperty("courseName")
-    @NotBlank
+    @NotBlank(message = "Course Name can not be blank")
     private String courseName;
 
+    @NotBlank(message = "Sub heading can not be blank")
     private String subHeading;
 }
