@@ -8,7 +8,7 @@ import java.util.List;
 public interface CourseService {
     List<CourseResponse> findAll();
 
-    List<CourseResponse> findByID(int theId);
+    CourseResponse findByID(int theId);
 
     CourseResponse save(CourseRequest courseRequest);
 }

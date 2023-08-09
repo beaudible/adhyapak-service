@@ -29,7 +29,7 @@ public class CourseController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<List<CourseResponse>> getCourseById(@PathVariable int id) {
+    public ResponseEntity<CourseResponse> getCourseById(@PathVariable int id) {
         return ResponseEntity.ok(courseService.findByID(id));
     }
 }

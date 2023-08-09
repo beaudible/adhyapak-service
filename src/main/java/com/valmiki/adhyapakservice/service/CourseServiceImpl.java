@@ -8,7 +8,6 @@ import com.valmiki.adhyapakservice.repo.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,7 +31,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public List<CourseResponse> findByID(int theId) {
+    public CourseResponse findByID(int theId) {
         Optional<Course> result = courseRepository.findById(theId);
         Course theCourse;
         if (result.isPresent()) {
@@ -40,13 +39,11 @@ public class CourseServiceImpl implements CourseService {
         } else {
             throw new DataNotFoundException();
         }
-        return Collections.singletonList(
-                CourseResponse.builder()
+        return CourseResponse.builder()
                         .id(theCourse.getId())
                         .courseName(theCourse.getCourseName())
                         .subHeading(theCourse.getSubHeading())
-                        .build()
-        );
+                        .build();
     }
 
     @Override
