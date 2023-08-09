@@ -38,11 +38,7 @@ public class CourseServiceImpl implements CourseService {
         if (result.isPresent()) {
             theCourse = result.get();
         } else {
-            try {
-                throw new DataNotFoundException();
-            } catch (DataNotFoundException e) {
-                throw new RuntimeException(e);
-            }
+            throw new DataNotFoundException();
         }
         return Collections.singletonList(
                 CourseResponse.builder()
