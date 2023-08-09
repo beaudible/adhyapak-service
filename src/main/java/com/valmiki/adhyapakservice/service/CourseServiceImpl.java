@@ -54,10 +54,16 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public void save(CourseRequest courseRequest) {
-        Course course = new Course();
-        course.setCourseName(courseRequest.getCourseName());
-        course.setSubHeading(courseRequest.getSubHeading());
+    public CourseResponse save(CourseRequest courseRequest) {
+        Course course = Course.builder()
+                        .courseName(courseRequest.getCourseName())
+                        .subHeading(courseRequest.getSubHeading())
+                                .build();
         courseRepository.save(course);
+        return CourseResponse.builder()
+                .id(course.getId())
+                .courseName(course.getCourseName())
+                .subHeading(course.getSubHeading())
+                .build();
     }
 }

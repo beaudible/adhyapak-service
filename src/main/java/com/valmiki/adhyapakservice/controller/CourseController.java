@@ -24,15 +24,7 @@ public class CourseController {
 
     @PostMapping
     public ResponseEntity<CourseResponse> addCourse(@RequestBody CourseRequest courseRequest) {
-        courseService.save(courseRequest);
-
-        CourseResponse courseResponse = CourseResponse.builder()
-                .id(courseRequest.getId())
-                .courseName(courseRequest.getCourseName())
-                .subHeading(courseRequest.getSubHeading())
-                .build();
-
-        return ResponseEntity.ok(courseResponse);
+        return ResponseEntity.ok(courseService.save(courseRequest));
     }
 
 

@@ -10,5 +10,5 @@ public interface CourseService {
 
     List<CourseResponse> findByID(int theId);
 
-    void save(CourseRequest courseRequest);
+    CourseResponse save(CourseRequest courseRequest);
 }
