@@ -1,10 +1,18 @@
 package com.valmiki.adhyapakservice.dto.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Builder
-@Data
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class CourseRequest {
 
     private int id;
@@ -12,4 +20,6 @@ public class CourseRequest {
     private String courseName;
 
     private String subHeading;
+
+
 }
