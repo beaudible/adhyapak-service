@@ -3,6 +3,7 @@ package com.valmiki.adhyapakservice.controller;
 import com.valmiki.adhyapakservice.dto.request.CourseRequest;
 import com.valmiki.adhyapakservice.dto.response.CourseResponse;
 import com.valmiki.adhyapakservice.service.CourseService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -29,7 +30,7 @@ public class CourseController {
     }
 
     @PostMapping
-    public ResponseEntity<CourseResponse> addCourse(@RequestBody CourseRequest courseRequest) {
+    public ResponseEntity<CourseResponse> addCourse(@Valid @RequestBody CourseRequest courseRequest) {
         return ResponseEntity.ok(courseService.save(courseRequest));
     }
 
