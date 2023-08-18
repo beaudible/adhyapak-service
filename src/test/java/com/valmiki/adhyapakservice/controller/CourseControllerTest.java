@@ -1,61 +1,99 @@
 package com.valmiki.adhyapakservice.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.valmiki.adhyapakservice.dto.request.CourseRequest;
 import com.valmiki.adhyapakservice.dto.response.CourseResponse;
 import com.valmiki.adhyapakservice.service.CourseService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest
 public class CourseControllerTest {
 
-    @Mock
-    private CourseService mockCourseService;
+    @Autowired
+    private MockMvc mockMvc;
 
-    @InjectMocks
-    private CourseController courseController;
+    @MockBean
+    private CourseService courseService;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+    private CourseRequest courseRequest, courseRequest2;
+    private CourseResponse courseResponse, courseResponse2;
+
+    private List<CourseResponse> courseList;
     @BeforeEach
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
+    void init() {
+
+
+        courseList = new ArrayList<>();
+        courseRequest = new CourseRequest();
+        courseRequest.setCourseName("Sample Course");
+        courseRequest.setSubHeading("Sample subheading");
+
+        courseRequest2 = new CourseRequest();
+        courseRequest2.setCourseName("Sample Course 2");
+        courseRequest2.setSubHeading("Sample subheading 2");
+
+        courseResponse = new CourseResponse();
+        courseResponse.setCourseName(courseRequest.getCourseName());
+        courseResponse.setSubHeading(courseRequest.getSubHeading());
+
+        courseResponse2 = new CourseResponse();
+        courseResponse2.setCourseName(courseRequest2.getCourseName());
+        courseResponse2.setSubHeading(courseRequest2.getSubHeading());
+
+        courseList.add(courseResponse);
+        courseList.add(courseResponse2);
+    }
+
+
+
+
+    @Test
+    void shouldCreateNewCourse() throws Exception {
+        when(courseService.save(any(CourseRequest.class))).thenReturn(courseResponse);
+        this.mockMvc.perform(post("/api/v1/course")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(courseRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.courseName", is(courseRequest.getCourseName())))
+                .andExpect(jsonPath("$.subHeading", is(courseRequest.getSubHeading())));
     }
 
     @Test
-    public void testListCourses() {
-        List<CourseResponse> courseResponses = new ArrayList<>();
-        when(mockCourseService.findAll()).thenReturn(courseResponses);
-        ResponseEntity<List<CourseResponse>> response = courseController.listCourses();
-        assertThat(response.getBody()).isEqualTo(courseResponses);
+    void shouldFetchAllCourses() throws Exception {
+        when(courseService.findAll()).thenReturn(courseList);
+
+        this.mockMvc.perform(get("/api/v1/course"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(courseList.size())));
     }
 
     @Test
-    public void testGetCourseById() {
-        CourseResponse courseResponse = new CourseResponse();
-        when(mockCourseService.findByID(1)).thenReturn(courseResponse);
-        ResponseEntity<CourseResponse> responseEntity = courseController.getCourseById(1);
-        assertThat(responseEntity.getBody()).isEqualTo(courseResponse);
+    void shouldFetchCoursesById() throws Exception {
+        when(courseService.findByID(anyInt())).thenReturn(courseResponse);
+
+        this.mockMvc.perform(get("/api/v1/course/{id}",Long.valueOf(1)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.courseName", is(courseResponse.getCourseName())))
+                .andExpect(jsonPath("$.subHeading", is(courseResponse.getSubHeading())));
     }
-
-    @Test
-    public void testAddCourse() {
-        CourseRequest courseRequest = new CourseRequest();
-        CourseResponse courseResponse = new CourseResponse();
-        when(mockCourseService.save(courseRequest)).thenReturn(courseResponse);
-        ResponseEntity<CourseResponse> responseEntity = courseController.addCourse(courseRequest);
-        assertThat(responseEntity.getBody()).isEqualTo(courseResponse);
-    }
-
-
 }

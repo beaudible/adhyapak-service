@@ -34,19 +34,21 @@ public class CourseServiceImplTest {
 
     private List<Course> courses;
 
+    private Course course1 = Course.builder()
+            .id(1)
+            .courseName("Sample Course")
+            .subHeading("Sample subheading")
+            .build();
+
+    private Course course2 = Course.builder()
+            .id(2)
+            .courseName("Sample Course")
+            .subHeading("Sample subheading")
+            .build();
+
     @BeforeEach
     public void setup() {
         courses = new ArrayList<>();
-        Course course1 = Course.builder()
-                .id(1)
-                .courseName("Sample Course")
-                .subHeading("Sample subheading")
-                .build();
-        Course course2 = Course.builder()
-                .id(2)
-                .courseName("Sample Course")
-                .subHeading("Sample subheading")
-                .build();
         courses.add(course1);
         courses.add(course2);
     }
@@ -61,15 +63,10 @@ public class CourseServiceImplTest {
 
     @Test
     public void testFindById() {
-        Course course = Course.builder()
-                .id(1)
-                .courseName("Sample Course")
-                .subHeading("Sample sub heading")
-                .build();
-        when(mockCourseRepository.findById(1)).thenReturn(Optional.of(course));
+        when(mockCourseRepository.findById(1)).thenReturn(Optional.of(course1));
         CourseResponse result = courseService.findByID(1);
         assertThat(result).isNotNull();
-        assertThat(result).isEqualToComparingFieldByField(course);
+        assertThat(result).isEqualToComparingFieldByField(course1);
     }
 
     @Test
@@ -78,12 +75,8 @@ public class CourseServiceImplTest {
                 .courseName("Sample Course")
                 .subHeading("Sample sub heading")
                 .build();
-        Course savedCourse = Course.builder()
-                .id(1)
-                .courseName("Sample Course")
-                .subHeading("Sample sub heading")
-                .build();
-        when(mockCourseRepository.save(any())).thenReturn(savedCourse);
+
+        when(mockCourseRepository.save(any())).thenReturn(course1);
 
         CourseResponse courseResponse = courseService.save(courseRequest);
 
